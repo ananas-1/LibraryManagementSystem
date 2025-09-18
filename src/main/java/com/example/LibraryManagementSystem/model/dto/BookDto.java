@@ -2,6 +2,7 @@ package com.example.LibraryManagementSystem.model.dto;
 
 public class BookDto {
 
+    private int id;
     private String title;
     private String author;
     private String isbn;
@@ -12,7 +13,8 @@ public class BookDto {
     public BookDto() {}
 
     // Constructor with all fields (optional)
-    public BookDto(String title, String author, String isbn, Integer publicationYear, Integer copies) {
+    public BookDto(int id,String title, String author, String isbn, Integer publicationYear, Integer copies) {
+        this.id = id;
         this.title = title;
         this.author = author;
         this.isbn = isbn;
@@ -20,6 +22,13 @@ public class BookDto {
         this.copies = copies;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getTitle() {
         return title;

@@ -8,7 +8,7 @@ public class BookEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @Column(nullable = false)
     private String title;
@@ -35,7 +35,7 @@ public class BookEntity {
         this.copies = copies;
     }
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
