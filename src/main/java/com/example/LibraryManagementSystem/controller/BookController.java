@@ -10,16 +10,29 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/Books")
+@Controller
+@RequestMapping("/books")
 public class BookController {
 
     @Autowired
     BookService bookService;
 
-    @PostMapping("/addBook")
-    public String addBook(@RequestBody BookDto bookDto) {
-        return bookService.addBook(bookDto);
+    @GetMapping("/add")
+    public String showAddBookForm(Model model) {
+        model.addAttribute("book", new BookDto()); // empty DTO for form binding
+        return "addBook"; // add-book.html
+    }
+
+    @PostMapping("/add")
+    public String addBook(@ModelAttribute BookDto bookDto, Model model) {
+        try {
+            bookService.addBook(bookDto);
+            return "redirect:/books?success=true";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Error: " + e.getMessage());
+            model.addAttribute("book", bookDto); // repopulate form
+            return "addBook";
+        }
     }
 
     @GetMapping
@@ -30,30 +43,56 @@ public class BookController {
     }
 
     @GetMapping("/{isbn}")
-    public BookDto GetBookDetails(@PathVariable String isbn) {
+    public String GetBookDetails(@PathVariable String isbn, Model model) {
         BookDto bookDto = bookService.findBookByISBN(isbn);
-//        model.addAttribute("bookDetails", bookDto);
-//        return "bookDetails";
-        return bookDto;
+        model.addAttribute("book", bookDto);
+        return "bookDetails";
     }
 
 
-    @PostMapping("/deleteBook")
-    public String deleteBook(@RequestBody BookDto bookDto) {
-        bookService.deleteBook(bookDto);
-        return "redirect:/Books";
+    // ➤ Show Edit Book Form
+    @GetMapping("/edit/{id}")
+    public String showEditBookForm(@PathVariable int id, Model model) {
+        BookDto bookDto = bookService.findBookById(id); // you may need to add this method in service
+        if (bookDto == null) {
+            return "redirect:/books?error=Book not found";
+        }
+        model.addAttribute("book", bookDto);
+        return "editBook"; // edit-book.html
     }
 
-
-    @PostMapping("/borrowBook")
-    public String borrowBook(@RequestBody BookDto bookDto) {
-        return bookService.borrowBook(bookDto);
-//        return "redirect:/Books";
+    // ➤ Handle Edit Book Form Submission
+    @PostMapping("/edit/{id}")
+    public String updateBook(@PathVariable int id, @ModelAttribute BookDto bookDto, Model model) {
+        try {
+            bookDto.setId(id); // ensure ID is set
+            bookService.updateBook(bookDto); // you may need to add update method
+            return "redirect:/books?success=true";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Error: " + e.getMessage());
+            model.addAttribute("book", bookDto);
+            return "editBook";
+        }
     }
 
-    @PostMapping("/returnBook")
-    public String returnBook(@RequestBody BookDto bookDto) {
-        bookService.returnBook(bookDto);
-        return "redirect:/Books";
+    // ➤ Delete Book (GET for simplicity, as per requirements)
+    @GetMapping("/delete/{isbn}")
+    public String deleteBook(@PathVariable String isbn) {
+        bookService.deleteBook(isbn); // add this method in service
+        return "redirect:/books?success=true";
+    }
+
+    // ➤ Borrow Book
+    @GetMapping("/borrow/{isbn}")
+    public String borrowBook(@PathVariable String isbn) {
+        bookService.borrowBook(isbn); // add this method
+        return "redirect:/books?success=Borrowed successfully";
+    }
+
+    // ➤ Return Book
+    @GetMapping("/return/{isbn}")
+    public String returnBook(@PathVariable String isbn) {
+        bookService.returnBook(isbn); // add this method
+        return "redirect:/books?success=Returned successfully";
     }
 }
