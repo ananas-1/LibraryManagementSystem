@@ -1,40 +1,29 @@
-package com.example.LibraryManagementSystem.model.entity;
+package com.example.LibraryManagementSystem.model.dto;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "user")
-public class UserEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
-    @Column(nullable = false, unique = true)
+public class UserDto {
+    private Integer id;
     private String username;
-
-    @Column(unique = true)
     private String email;
-
-    @Column(nullable = false)
     private String password;
-
-    @Column(name = "is_admin", nullable = false)
     private Boolean isAdmin;
 
+    public UserDto() {}
 
-    public UserEntity() {}
-    public UserEntity(String username, String email, String password, Boolean isAdmin) {
+    public UserDto(Integer id, String username, String email, String password, Boolean isAdmin) {
+        this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.isAdmin = isAdmin;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getUsername() {
         return username;
@@ -64,7 +53,6 @@ public class UserEntity {
         return isAdmin;
     }
 
-    public void setAdmin(Boolean admin) {
-        isAdmin = admin;
+    public void setAdmin(Boolean admin) {this.isAdmin = admin;
     }
 }
